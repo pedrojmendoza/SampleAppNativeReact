@@ -6,13 +6,20 @@
     "jest": "^22.4.3",
     "babel-preset-react-native-stage-0": "^1.0.1",
     "jest-react-native": "^18.0.0",
-    "react-test-renderer": "16.2.0"
+    "react-test-renderer": "16.2.0",
+    "appium": "^1.6.5",
+    "appium-doctor": "^1.4.3",
+    "wd": "^1.4.0"
   },
   "scripts": {
     "start": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "test": "node node_modules/jest/bin/jest.js"
+    "start:appium": "appium",
+    "test": "E2E_DEVICE=\"*\" jest --testMatch=\"**/__tests__/**/!(*e2e.js)\"",
+		"test:e2e": "jest --testMatch=\"**/__tests__/**/*e2e.js\"",
+		"test:e2e:android": "E2E_DEVICE=\"android-emulator\" npm run test:e2e",
+		"test:e2e:ios": "E2E_DEVICE=\"ios-emulator\" npm run test:e2e"
   },
   "jest": {
     "preset": "react-native",
@@ -24,5 +31,20 @@
     "react": "16.2.0",
     "react-native": "0.52.0",
     "tcomb-form-native": "^0.6.11"
-  }
+  },
+	"e2e": {
+		"devices": {
+			"ios-emulator": {
+				"platformName": "iOS",
+				"platformVersion": "10.3",
+				"deviceName": "iPhone Simulator",
+				"app": "./ios/build/Build/Products/Release-iphonesimulator/e2etest.app"
+			},
+			"android-emulator": {
+				"platformName": "Android",
+				"deviceName": "Android Emulator",
+				"app": "./android/app/build/outputs/apk/app-release.apk"
+			}
+		}
+	}
 }
