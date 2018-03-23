@@ -35,6 +35,18 @@ pipeline {
       }
     }
 
+    stage ('Grab secrets') {
+      steps {
+        // download secrets from S3
+        sh "aws s3 cp s3://${env.S3_SECRETS_BUCKET}/google-play.json google-play.json"
+        sh "aws s3 cp s3://${env.S3_SECRETS_BUCKET}/gradle.properties ./android/gradle.properties"
+        sh "aws s3 cp s3://${env.S3_SECRETS_BUCKET}/my-release-key.keystore ./android/app/my-release-key.keystore"
+
+        // stash secrets
+        stash includes: 'google-play.json, android/gradle.properties, android/app/my-release-key.keystore', name: 'secrets'
+      }
+    }
+
     stage ('Build Android APK') {
       agent {
         docker {
@@ -42,15 +54,14 @@ pipeline {
         }
       }
       steps {
-        echo "Build Android APK ..."
-        // download secrets from S3
-        sh "aws s3 cp s3://${env.S3_SECRETS_BUCKET}/google-play.json google-play.json"
-        sh "aws s3 cp s3://${env.S3_SECRETS_BUCKET}/gradle.properties ./android/gradle.properties"
-        sh "aws s3 cp s3://${env.S3_SECRETS_BUCKET}/my-release-key.keystore ./android/app/my-release-key.keystore"
+        // unstash secrets
+        unstash 'secrets'
+
         // invoke gradlew assembleRelease
         sh "cd android && ./gradlew assembleRelease"
+
         // stash APK
-        stash includes: './android/app/build/outputs/apk/app-release.apk', name: 'APK'
+        stash includes: 'android/app/build/outputs/apk/app-release.apk', name: 'APK'
       }
     }
 
