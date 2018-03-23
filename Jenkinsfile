@@ -44,20 +44,38 @@ pipeline {
 
         // stash secrets
         stash includes: 'google-play.json, android/gradle.properties, android/app/my-release-key.keystore', name: 'secrets'
+
+        // download licenses from S3
+        sh "aws s3 cp s3://menpedro-playstore-secrets/licenses ./licenses --recursive"
+
+        // stash licenses
+        stash includes: 'licenses/**', name: 'licenses'
       }
     }
 
     stage ('Build Android APK') {
       agent {
         docker {
-          image 'thyrlian/android-sdk'
+          image 'beevelop/android-nodejs:latest'
         }
       }
+      environment {
+        HOME="."
+      }
       steps {
+        sh "npm config set proxy ${env.HTTP_PROXY}"
+        sh "npm config set https-proxy ${env.HTTPS_PROXY}"
+        sh "npm install"
+
         // unstash secrets
         unstash 'secrets'
 
+        // unstash licenses
+        unstash 'licenses'
+
         // invoke gradlew assembleRelease
+        sh "mkdir /opt/android/licenses"
+        sh "cp licenses/* /opt/android/licenses/"
         sh "cd android && ./gradlew assembleRelease"
 
         // stash APK
@@ -68,14 +86,13 @@ pipeline {
     stage ('End to end test') {
       agent {
         docker {
-          image 'node:6'
+          image 'beevelop/android-nodejs:latest'
         }
       }
       environment {
         HOME="."
       }
       steps {
-        echo "End to end test ..."
         sh "npm config set proxy ${env.HTTP_PROXY}"
         sh "npm config set https-proxy ${env.HTTPS_PROXY}"
         sh "npm install"
