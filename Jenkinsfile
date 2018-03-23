@@ -36,6 +36,11 @@ pipeline {
     }
 
     stage ('Build Android APK') {
+      agent {
+        docker {
+          image 'thyrlian/android-sdk'
+        }
+      }
       steps {
         echo "Build Android APK ..."
         // download secrets from S3
