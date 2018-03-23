@@ -20,3 +20,6 @@ yarn-error.log*
 /android/app/my-release-key.keystore
 /android/gradle.properties
 google-play.json
+
+# gradle generated artifacts
+android/.gradle
