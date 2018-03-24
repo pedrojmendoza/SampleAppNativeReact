@@ -76,8 +76,7 @@ pipeline {
         //sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && CI=true npm run test:e2e:android'"
 
         // stash APK
-        sh "docker exec android sh -c 'chown jenkins /my-app/android/app/build/outputs/apk/app-release.apk'"
-        stash includes: '/my-app/android/app/build/outputs/apk/app-release.apk', name: 'APK'
+        stash includes: 'android/app/build/outputs/apk/app-release.apk', name: 'APK'
       }
       post {
         always {
