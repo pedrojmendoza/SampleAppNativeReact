@@ -86,7 +86,7 @@ pipeline {
       }
       post {
         always {
-          sh 'docker exec android sh -c "cd /my-app && rm -rf .npm && rm -rf node_modules && rm -rf config && rm -rf package-lock.json && rm -rf android/build && rm -rf android/.gradle && rm -rf android/app/build"'
+          sh 'docker exec android sh -c "cd /my-app && rm -rf .npm && rm -rf node_modules && rm -rf .config && rm -rf package-lock.json && rm -rf android/build && rm -rf android/.gradle && rm -rf android/app/build"'
           sh 'docker stop android'
         }
       }
