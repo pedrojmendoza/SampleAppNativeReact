@@ -64,26 +64,22 @@ pipeline {
         // install node
         sh "docker exec android sh -c 'mkdir /node'"
         sh "docker exec android sh -c 'cd /node && curl -sL https://nodejs.org/dist/v8.10.0/node-v8.10.0-linux-x64.tar.gz | tar xz --strip-components=1'"
-        sh "docker exec android sh -c 'export PATH=$PATH:/node/bin'"
 
         // npm install
-        sh "docker exec android sh -c 'export HOME=.'"
-        sh "docker exec android sh -c 'cd /my-app && npm config set proxy ${env.HTTP_PROXY} && npm config set https-proxy ${env.HTTPS_PROXY} && npm install'"
+        sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && npm config set proxy ${env.HTTP_PROXY} && npm config set https-proxy ${env.HTTPS_PROXY} && npm install'"
 
         // gradle
-        sh "docker exec android sh -c 'cd /my-app/android && ./gradlew assembleRelease'"
+        sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app/android && ./gradlew assembleRelease'"
 
         // emulator
         sh "docker exec android sh -c '/sdk/tools/bin/sdkmanager \"system-images;android-25;google_apis;arm64-v8a\"'"
         sh "docker exec android sh -c 'yes | /sdk/tools/bin/sdkmanager --licenses'"
         sh "docker exec android sh -c 'echo \"no\" | /sdk/tools/bin/avdmanager create avd -n Nexus_5X_API_25 -k \"system-images;android-25;google_apis;arm64-v8a\" -f'"
-        sh "docker exec android sh -c 'export HOME=/root'"
-        sh "docker exec android sh -c 'cd /sdk/tools && emulator -avd Nexus_5X_API_25 -no-snapshot-load -no-skin -no-audio -no-window &'"
+        sh "docker exec android sh -c 'export HOME=/root && cd /sdk/tools && emulator -avd Nexus_5X_API_25 -no-snapshot-load -no-skin -no-audio -no-window &'"
 
         // emulator
-        sh "docker exec android sh -c 'export HOME=.'"
-        sh "docker exec android sh -c 'cd /my-app && npm run start:appium &'"
-        sh "docker exec android sh -c 'cd /my-app && CI=true npm run test:e2e:android'"
+        sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && npm run start:appium &'"
+        sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && CI=true npm run test:e2e:android'"
 
         // stash APK
         stash includes: '/my-app/android/app/build/outputs/apk/app-release.apk', name: 'APK'
