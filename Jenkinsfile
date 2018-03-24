@@ -53,63 +53,51 @@ pipeline {
       }
     }
 
-    stage ('Build Android APK') {
-      agent {
-        docker {
-          image 'beevelop/android-nodejs:latest'
-        }
-      }
-      environment {
-        HOME="."
-      }
+    stage ('Build Android APK and end to end test') {
       steps {
-        sh "npm config set proxy ${env.HTTP_PROXY}"
-        sh "npm config set https-proxy ${env.HTTPS_PROXY}"
-        sh "npm install"
-
         // unstash secrets
         unstash 'secrets'
 
-        // unstash licenses
-        unstash 'licenses'
+        // launch android sdk container
+        sh "docker run -tid -v ${env.WORKSPACE}:/my-app -e HTTP_PROXY -e HTTPS_PROXY --name android --rm javiersantos/android-ci:latest"
 
-        // invoke gradlew assembleRelease
-        sh "mkdir /opt/android/licenses"
-        sh "cp licenses/* /opt/android/licenses/"
-        sh "cd android && ./gradlew assembleRelease"
+        // install node
+        sh "docker exec android sh -c 'mkdir /node'"
+        sh "docker exec android sh -c 'cd /node'"
+        sh "docker exec android sh -c 'curl -sL https://nodejs.org/dist/v8.10.0/node-v8.10.0-linux-x64.tar.gz | tar xz --strip-components=1'"
+        sh "docker exec android sh -c 'export PATH=$PATH:/node/bin'"
+
+        // npm install
+        sh "docker exec android sh -c 'cd /my-app'"
+        sh "docker exec android sh -c 'npm config set proxy ${env.HTTP_PROXY} && npm config set https-proxy ${env.HTTPS_PROXY}'"
+        sh "docker exec android sh -c 'export HOME=.'"
+        sh "docker exec android sh -c 'npm install'"
+
+        // gradle
+        sh "docker exec android sh -c 'cd android && ./gradlew assembleRelease && cd ..'"
+
+        // emulator
+        sh "docker exec android sh -c '/sdk/tools/bin/sdkmanager \"system-images;android-25;google_apis;arm64-v8a\"'"
+        sh "docker exec android sh -c 'yes | /sdk/tools/bin/sdkmanager --licenses'"
+        sh "docker exec android sh -c 'echo \"no\" | /sdk/tools/bin/avdmanager create avd -n Nexus_5X_API_25 -k \"system-images;android-25;google_apis;arm64-v8a\" -f'"
+        sh "docker exec android sh -c 'export HOME=/root'"
+        sh "docker exec android sh -c 'cd /sdk/tools'"
+        sh "docker exec android sh -c 'emulator -avd Nexus_5X_API_25 -no-snapshot-load -no-skin -no-audio -no-window &'"
+
+        // emulator
+        sh "docker exec android sh -c 'cd /my-app'"
+        sh "docker exec android sh -c 'export HOME=.'"
+        sh "docker exec android sh -c 'npm run start:appium &'"
+        sh "docker exec android sh -c 'CI=true npm run test:e2e:android'"
 
         // stash APK
         stash includes: 'android/app/build/outputs/apk/app-release.apk', name: 'APK'
       }
-    }
-
-    stage ('End to end test') {
-      agent {
-        docker {
-          image 'beevelop/android-nodejs:latest'
+      post {
+        always {
+          sh 'docker exec android sh -c "cd /my-app && rm -rf node_modules && rm -rf config && rm -rf package-lock.json"'
+          sh 'docker stop android'
         }
-      }
-      environment {
-        HOME="."
-      }
-      steps {
-        sh "npm config set proxy ${env.HTTP_PROXY}"
-        sh "npm config set https-proxy ${env.HTTPS_PROXY}"
-        sh "npm install"
-
-        // unstash APK
-        unstash 'APK'
-
-        // start emulator
-        sh "${env.ANDROID_HOME}/tools/emulator -avd Nexus_5X_API_25"
-
-        // start Appium
-        sh "npm run start:appium"
-
-        // run end-to-end test
-        sh "CI=true npm run test:e2e:android"
-
-        // post terminate emulator/appium?
       }
     }
 
