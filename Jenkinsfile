@@ -44,12 +44,6 @@ pipeline {
 
         // stash secrets
         stash includes: 'google-play.json, android/gradle.properties, android/app/my-release-key.keystore', name: 'secrets'
-
-        // download licenses from S3
-        sh "aws s3 cp s3://menpedro-playstore-secrets/licenses ./licenses --recursive"
-
-        // stash licenses
-        stash includes: 'licenses/**', name: 'licenses'
       }
     }
 
