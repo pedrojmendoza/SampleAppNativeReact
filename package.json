@@ -19,7 +19,10 @@
     "test": "E2E_DEVICE=\"*\" jest --testMatch=\"**/__tests__/**/!(*e2e.js)\"",
 		"test:e2e": "jest --testMatch=\"**/__tests__/**/*e2e.js\"",
 		"test:e2e:android": "E2E_DEVICE=\"android-emulator\" npm run test:e2e",
-		"test:e2e:ios": "E2E_DEVICE=\"ios-emulator\" npm run test:e2e"
+		"test:e2e:ios": "E2E_DEVICE=\"ios-emulator\" npm run test:e2e",
+    "beta:android": "cd ./android && fastlane beta",
+    "prod:android": "cd ./android && fastlane prod",
+    "promote:android": "cd ./android && fastlane promote"
   },
   "jest": {
     "preset": "react-native",

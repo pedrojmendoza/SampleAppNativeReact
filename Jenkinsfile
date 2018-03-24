@@ -53,7 +53,7 @@ pipeline {
       }
     }
 
-    stage ('Build Android APK and end to end test') {
+    stage ('Build Android APK') {
       steps {
         // unstash secrets
         unstash 'secrets'
@@ -72,14 +72,14 @@ pipeline {
         sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app/android && ./gradlew assembleRelease'"
 
         // emulator
-        sh "docker exec android sh -c '/sdk/tools/bin/sdkmanager \"system-images;android-25;google_apis;arm64-v8a\"'"
-        sh "docker exec android sh -c 'yes | /sdk/tools/bin/sdkmanager --licenses'"
-        sh "docker exec android sh -c 'echo \"no\" | /sdk/tools/bin/avdmanager create avd -n Nexus_5X_API_25 -k \"system-images;android-25;google_apis;arm64-v8a\" -f'"
-        sh "docker exec android sh -c 'export HOME=/root && cd /sdk/tools && emulator -avd Nexus_5X_API_25 -no-snapshot-load -no-skin -no-audio -no-window &'"
+        //sh "docker exec android sh -c '/sdk/tools/bin/sdkmanager \"system-images;android-25;google_apis;arm64-v8a\"'"
+        //sh "docker exec android sh -c 'yes | /sdk/tools/bin/sdkmanager --licenses'"
+        //sh "docker exec android sh -c 'echo \"no\" | /sdk/tools/bin/avdmanager create avd -n Nexus_5X_API_25 -k \"system-images;android-25;google_apis;arm64-v8a\" -f'"
+        //sh "docker exec android sh -c 'export HOME=/root && cd /sdk/tools && emulator -avd Nexus_5X_API_25 -no-snapshot-load -no-skin -no-audio -no-window &'"
 
-        // emulator
-        sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && npm run start:appium &'"
-        sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && CI=true npm run test:e2e:android'"
+        // appium and e2e tests
+        //sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && npm run start:appium &'"
+        //sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && CI=true npm run test:e2e:android'"
 
         // stash APK
         stash includes: '/my-app/android/app/build/outputs/apk/app-release.apk', name: 'APK'
@@ -92,11 +92,16 @@ pipeline {
       }
     }
 
-    stage ('Deploy to PlayStore internal test') {
+    stage ('Deploy to PlayStore BETA') {
+      agent {
+        docker {
+          image 'ruby'
+        }
+      }
       steps {
-        echo "Deploy to PlayStore internal test ..."
-        // unstash APK
-        // invoke fastlane
+        unstash 'APK'
+        sh 'gem install fastlane --verbose'
+        sh 'cd android && fastlane supply --apk app/build/outputs/apk/app-release.apk --track beta'
       }
     }
 
@@ -109,9 +114,14 @@ pipeline {
         ok "Yes, we should."
         submitter "admin"
       }
+      agent {
+        docker {
+          image 'ruby'
+        }
+      }
       steps {
-        echo "Promote to PlayStore PROD ..."
-        // invoke fastlane
+        sh 'gem install fastlane --verbose'
+        sh 'cd android && fastlane supply upload_to_play_store --track beta --track_promote_to production --skip_upload_apk true --skip_upload_metadata true --skip_upload_images true --skip_upload_screenshots true'
       }
     }
   }
