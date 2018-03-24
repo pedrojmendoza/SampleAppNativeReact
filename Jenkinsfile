@@ -76,6 +76,7 @@ pipeline {
         //sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && CI=true npm run test:e2e:android'"
 
         // stash APK
+        sh "docker exec android sh -c 'chown jenkins /my-app/android/app/build/outputs/apk/app-release.apk"
         stash includes: '/my-app/android/app/build/outputs/apk/app-release.apk', name: 'APK'
       }
       post {
@@ -93,6 +94,7 @@ pipeline {
         }
       }
       steps {
+        unstash 'secrets'
         unstash 'APK'
         sh 'gem install fastlane --verbose'
         sh 'cd android && fastlane supply --apk app/build/outputs/apk/app-release.apk --track beta'
@@ -114,6 +116,7 @@ pipeline {
         }
       }
       steps {
+        unstash 'secrets'
         sh 'gem install fastlane --verbose'
         sh 'cd android && fastlane supply upload_to_play_store --track beta --track_promote_to production --skip_upload_apk true --skip_upload_metadata true --skip_upload_images true --skip_upload_screenshots true'
       }
