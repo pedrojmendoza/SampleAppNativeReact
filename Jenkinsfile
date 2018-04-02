@@ -96,7 +96,7 @@ pipeline {
         unstash 'secrets'
         unstash 'APK'
         sh 'gem install fastlane --verbose'
-        sh 'cd android && fastlane upload_to_play_store --apk app/build/outputs/apk/app-release.apk --track beta'
+        sh 'cd android && fastlane supply --apk app/build/outputs/apk/app-release.apk --track beta'
       }
     }
 
@@ -117,7 +117,7 @@ pipeline {
       steps {
         unstash 'secrets'
         sh 'gem install fastlane --verbose'
-        sh 'cd android && fastlane upload_to_play_store --track beta --track_promote_to production --skip_upload_apk true --skip_upload_metadata true --skip_upload_images true --skip_upload_screenshots true'
+        sh 'cd android && fastlane supply --track beta --track_promote_to production --skip_upload_apk true --skip_upload_metadata true --skip_upload_images true --skip_upload_screenshots true'
       }
     }
   }
