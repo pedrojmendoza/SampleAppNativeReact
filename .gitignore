@@ -23,3 +23,6 @@ google-play.json
 
 # gradle generated artifacts
 android/.gradle
+
+# python virtual env
+venv/

@@ -16,10 +16,8 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start:appium": "appium",
-    "test": "E2E_DEVICE=\"*\" jest --testMatch=\"**/__tests__/**/!(*e2e.js)\"",
-		"test:e2e": "jest --testMatch=\"**/__tests__/**/*e2e.js\"",
-		"test:e2e:android": "E2E_DEVICE=\"android-emulator\" npm run test:e2e",
-		"test:e2e:ios": "E2E_DEVICE=\"ios-emulator\" npm run test:e2e",
+    "test": "jest --testMatch=\"**/tests/**/!(*e2e.js)\"",
+    "test:e2e:android": "source venv/bin/activate && LOCATION='local' py.test && deactivate",
     "beta:android": "cd ./android && fastlane beta",
     "prod:android": "cd ./android && fastlane prod",
     "promote:android": "cd ./android && fastlane promote"
@@ -38,20 +36,5 @@
     "react": "16.3.0",
     "react-native": "0.54.4",
     "tcomb-form-native": "^0.6.11"
-  },
-	"e2e": {
-		"devices": {
-			"ios-emulator": {
-				"platformName": "iOS",
-				"platformVersion": "10.3",
-				"deviceName": "iPhone Simulator",
-				"app": "./ios/build/Build/Products/Release-iphonesimulator/e2etest.app"
-			},
-			"android-emulator": {
-				"platformName": "Android",
-				"deviceName": "Android Emulator",
-				"app": "./android/app/build/outputs/apk/app-release.apk"
-			}
-		}
-	}
+  }
 }

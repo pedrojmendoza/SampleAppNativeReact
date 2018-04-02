@@ -65,16 +65,6 @@ pipeline {
         // gradle
         sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app/android && ./gradlew assembleRelease'"
 
-        // emulator
-        //sh "docker exec android sh -c '/sdk/tools/bin/sdkmanager \"system-images;android-25;google_apis;arm64-v8a\"'"
-        //sh "docker exec android sh -c 'yes | /sdk/tools/bin/sdkmanager --licenses'"
-        //sh "docker exec android sh -c 'echo \"no\" | /sdk/tools/bin/avdmanager create avd -n Nexus_5X_API_25 -k \"system-images;android-25;google_apis;arm64-v8a\" -f'"
-        //sh "docker exec android sh -c 'export HOME=/root && cd /sdk/tools && emulator -avd Nexus_5X_API_25 -no-snapshot-load -no-skin -no-audio -no-window &'"
-
-        // appium and e2e tests
-        //sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && npm run start:appium &'"
-        //sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && CI=true npm run test:e2e:android'"
-
         // stash APK
         stash includes: 'android/app/build/outputs/apk/app-release.apk', name: 'APK'
       }
@@ -83,6 +73,14 @@ pipeline {
           sh 'docker exec android sh -c "cd /my-app && rm -rf .npm && rm -rf node_modules && rm -rf .config && rm -rf package-lock.json && rm -rf android/build && rm -rf android/.gradle && rm -rf android/app/build"'
           sh 'docker stop android'
         }
+      }
+    }
+
+    stage ('End to end testing') {
+      steps {
+        unstash 'APK'
+        sh "zip -r test_bundle.zip tests/ wheelhouse/ requirements.txt"
+        sh "scripts/scheduleDeviceFarmTest.sh arn:aws:devicefarm:us-west-2:264359801351:project:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8 arn:aws:devicefarm:us-west-2:264359801351:devicepool:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8/7cefba36-444d-4912-a3ab-469e9ecc9e65 us-west-2 ${env.GIT_COMMIT}"
       }
     }
 
