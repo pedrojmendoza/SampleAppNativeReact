@@ -35,8 +35,8 @@
     ]
   },
   "dependencies": {
-    "react": "16.2.0",
-    "react-native": "0.54.2",
+    "react": "16.3.0",
+    "react-native": "0.54.4",
     "tcomb-form-native": "^0.6.11"
   },
 	"e2e": {
