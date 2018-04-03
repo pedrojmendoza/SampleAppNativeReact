@@ -3,7 +3,9 @@ def test_basic(driver):
     driver.implicitly_wait(WAIT_SEC)
 
     form_view = driver.find_element_by_accessibility_id('form_view')
-    assert form_view is not None
+    if form_view is None:
+        raise AssertionError
 
     submit_button = driver.find_element_by_accessibility_id('submit_button')
-    assert submit_button is not None
+    if submit_button is None:
+        raise AssertionError
