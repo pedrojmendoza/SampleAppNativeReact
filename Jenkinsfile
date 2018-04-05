@@ -63,7 +63,7 @@ pipeline {
         sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && npm config set proxy ${env.HTTP_PROXY} && npm config set https-proxy ${env.HTTPS_PROXY} && npm install'"
 
         // gradle
-        sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app/android && ./gradlew assembleRelease'"
+        sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && export ENVFILE=.env.us && cd /my-app/android && ./gradlew assembleRelease'"
 
         // stash APK
         stash includes: 'android/app/build/outputs/apk/app-release.apk', name: 'APK'

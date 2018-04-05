@@ -24,5 +24,7 @@ google-play.json
 # gradle generated artifacts
 android/.gradle
 
-# python virtual env
+# python virtual env and related caches
 venv/
+.pytest_cache/
+tests/__pycache__/

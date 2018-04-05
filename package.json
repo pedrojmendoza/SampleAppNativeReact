@@ -12,8 +12,10 @@
     "wd": "^1.4.0"
   },
   "scripts": {
-    "start": "react-native start",
-    "android": "react-native run-android",
+    "debug:android:es": "ENVFILE=.env.es react-native run-android",
+    "debug:android:us": "ENVFILE=.env.us react-native run-android",
+    "release:android:es": "export ENVFILE=.env.es && cd android && ./gradlew assembleRelease && cd ..",
+    "release:android:us": "export ENVFILE=.env.us && cd android && ./gradlew assembleRelease && cd ..",
     "ios": "react-native run-ios",
     "start:appium": "appium",
     "test": "jest --testMatch=\"**/tests/**/!(*e2e.js)\"",
@@ -25,7 +27,7 @@
   "jest": {
     "preset": "react-native",
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|tcomb-form-native)/)"
+      "node_modules/(?!(react-native|tcomb-form-native|react-native-config)/)"
     ],
     "modulePathIgnorePatterns": [
       "npm-cache",
@@ -35,6 +37,7 @@
   "dependencies": {
     "react": "16.3.0",
     "react-native": "0.54.4",
+    "react-native-config": "^0.11.5",
     "tcomb-form-native": "^0.6.11"
   }
 }
