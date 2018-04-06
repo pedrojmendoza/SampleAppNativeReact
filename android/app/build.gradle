@@ -104,7 +104,7 @@ android {
         resValue "string", "build_config_package", "com.mynativeapp"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 20
+        versionCode 21
         versionName "1.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"

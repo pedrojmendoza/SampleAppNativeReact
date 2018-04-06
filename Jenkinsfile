@@ -61,7 +61,7 @@ pipeline {
               unstash 'secrets'
 
               // launch android sdk container
-              sh "docker run -tid -v ${env.WORKSPACE}/US:/my-app -e HTTP_PROXY -e HTTPS_PROXY --name android_us --rm javiersantos/android-ci:latest"
+              sh "docker run -tid -v ${env.WORKSPACE}/US:/my-app -e HTTP_PROXY -e HTTPS_PROXY --name android_us --rm runmymind/docker-android-sdk:latest"
 
               // install node
               sh "docker exec android_us sh -c 'mkdir /node'"
@@ -94,7 +94,7 @@ pipeline {
               unstash 'secrets'
 
               // launch android sdk container
-              sh "docker run -tid -v ${env.WORKSPACE}/ES:/my-app -e HTTP_PROXY -e HTTPS_PROXY --name android_es --rm javiersantos/android-ci:latest"
+              sh "docker run -tid -v ${env.WORKSPACE}/ES:/my-app -e HTTP_PROXY -e HTTPS_PROXY --name android_es --rm runmymind/docker-android-sdk:latest"
 
               // install node
               sh "docker exec android_es sh -c 'mkdir /node'"
