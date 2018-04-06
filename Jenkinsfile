@@ -117,6 +117,7 @@ pipeline {
       }
     }
 
+/*
     stage ('End to end test') {
       parallel {
         stage('US') {
@@ -141,6 +142,7 @@ pipeline {
         }
       }
     }
+*/
 
     stage ('Deploy to PlayStore BETA') {
       parallel {
@@ -154,7 +156,9 @@ pipeline {
             unstash 'secrets'
             unstash 'APK_US'
             sh 'gem install fastlane --verbose'
-            sh 'cd android && fastlane beta_us'
+            sh 'ls -la android/fastlane'
+            sh 'ls -la android/app/build/outputs/apk'
+            sh 'cd android && fastlane beta_us --verbose'
           }
         }
         stage('ES') {
@@ -167,7 +171,9 @@ pipeline {
             unstash 'secrets'
             unstash 'APK_ES'
             sh 'gem install fastlane --verbose'
-            sh 'cd android && fastlane beta_es'
+            sh 'ls -la android/fastlane'
+            sh 'ls -la android/app/build/outputs/apk'
+            sh 'cd android && fastlane beta_es --verbose'
           }
         }
       }
