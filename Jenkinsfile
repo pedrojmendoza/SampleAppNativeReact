@@ -154,7 +154,7 @@ pipeline {
             unstash 'secrets'
             unstash 'APK_US'
             sh 'gem install fastlane --verbose'
-            sh 'cd android && fastlane supply init --package_name com.mynativeapp.us && fastlane beta_us --verbose && rm -rf fastlane/metadata/'
+            sh 'fastlane supply --apk android/app/build/outputs/apk/app-release.apk --track beta --package_name com.mynativeapp.us --json_key google-play.json --verbose'
           }
         }
         stage('ES') {
@@ -167,7 +167,7 @@ pipeline {
             unstash 'secrets'
             unstash 'APK_ES'
             sh 'gem install fastlane --verbose'
-            sh 'cd android && fastlane supply init --package_name com.mynativeapp.es && fastlane beta_es --verbose && rm -rf fastlane/metadata/'
+            sh 'fastlane supply --apk android/app/build/outputs/apk/app-release.apk --track beta --package_name com.mynativeapp.es --json_key google-play.json --verbose'
           }
         }
       }
@@ -175,7 +175,7 @@ pipeline {
 
     stage ('Promote to PlayStore PROD') {
       options {
-          timeout(time: 5, unit: 'MINUTES')
+          timeout(time: 6, unit: 'HOURS')
       }
       input {
         message "Promote deployment to PROD?"
@@ -190,7 +190,8 @@ pipeline {
       steps {
         unstash 'secrets'
         sh 'gem install fastlane --verbose'
-        sh 'cd android && fastlane promote_us && fastlane promote_es'
+        sh 'fastlane supply --track beta --track_promote_to production --skip_upload_apk true --skip_upload_metadata true --skip_upload_images true --skip_upload_screenshots true --package_name com.mynativeapp.us --json_key google-play.json --verbose'
+        sh 'fastlane supply --track beta --track_promote_to production --skip_upload_apk true --skip_upload_metadata true --skip_upload_images true --skip_upload_screenshots true --package_name com.mynativeapp.es --json_key google-play.json --verbose'
       }
     }
   }
