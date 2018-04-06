@@ -20,9 +20,10 @@
     "start:appium": "appium",
     "test": "jest --testMatch=\"**/tests/**/!(*e2e.js)\"",
     "test:e2e:android": "source venv/bin/activate && LOCATION='local' py.test && deactivate",
-    "beta:android": "cd ./android && fastlane beta",
-    "prod:android": "cd ./android && fastlane prod",
-    "promote:android": "cd ./android && fastlane promote"
+    "beta:android:es": "cd ./android && fastlane beta_es",
+    "beta:android:us": "cd ./android && fastlane beta_us",
+    "promote:android:es": "cd ./android && fastlane promote_es",
+    "promote:android:us": "cd ./android && fastlane promote_us"
   },
   "jest": {
     "preset": "react-native",
@@ -35,8 +36,8 @@
     ]
   },
   "dependencies": {
-    "react": "16.3.0",
-    "react-native": "0.54.4",
+    "react": "16.3.1",
+    "react-native": "0.55.1",
     "react-native-config": "^0.11.5",
     "tcomb-form-native": "^0.6.11"
   }
