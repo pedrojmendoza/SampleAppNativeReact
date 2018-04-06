@@ -16,26 +16,16 @@ or alternatively using `brew cask install fastlane`
 
 # Available Actions
 ## Android
-### android test
-```
-fastlane android test
-```
-Runs all the tests
 ### android beta
 ```
 fastlane android beta
 ```
-Bump version and submit a new BETA Build to Google Play
-### android prod
-```
-fastlane android prod
-```
-Deploy (directly) the latest version to PROD in the Google Play
+
 ### android promote
 ```
 fastlane android promote
 ```
-Promote the version in BETA to PROD in the Google Play
+
 
 ----
 

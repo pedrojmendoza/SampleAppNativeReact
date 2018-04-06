@@ -4,7 +4,6 @@ pipeline {
 
   environment {
     S3_SECRETS_BUCKET = 'menpedro-playstore-secrets'
-    ANDROID_HOME = '/Users/menpedro/Library/Android/sdk'
   }
 
   triggers {
@@ -48,53 +47,129 @@ pipeline {
     }
 
     stage ('Build Android APK') {
-      steps {
-        // unstash secrets
-        unstash 'secrets'
+      parallel {
+        stage('US') {
+          steps {
+            dir("US") {
+              // grab source code
+              checkout scm
 
-        // launch android sdk container
-        sh "docker run -tid -v ${env.WORKSPACE}:/my-app -e HTTP_PROXY -e HTTPS_PROXY --name android --rm javiersantos/android-ci:latest"
+              // unstash secrets
+              unstash 'secrets'
 
-        // install node
-        sh "docker exec android sh -c 'mkdir /node'"
-        sh "docker exec android sh -c 'cd /node && curl -sL https://nodejs.org/dist/v8.10.0/node-v8.10.0-linux-x64.tar.gz | tar xz --strip-components=1'"
+              // launch android sdk container
+              sh "docker run -tid -v ${env.WORKSPACE}/US:/my-app -e HTTP_PROXY -e HTTPS_PROXY --name android_us --rm javiersantos/android-ci:latest"
 
-        // npm install
-        sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && npm config set proxy ${env.HTTP_PROXY} && npm config set https-proxy ${env.HTTPS_PROXY} && npm install'"
+              // install node
+              sh "docker exec android_us sh -c 'mkdir /node'"
+              sh "docker exec android_us sh -c 'cd /node && curl -sL https://nodejs.org/dist/v8.10.0/node-v8.10.0-linux-x64.tar.gz | tar xz --strip-components=1'"
 
-        // gradle
-        sh "docker exec android sh -c 'export PATH=$PATH:/node/bin && export HOME=. && export ENVFILE=.env.us && cd /my-app/android && ./gradlew assembleRelease'"
+              // npm install
+              sh "docker exec android_us sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && npm config set proxy ${env.HTTP_PROXY} && npm config set https-proxy ${env.HTTPS_PROXY} && npm install'"
 
-        // stash APK
-        stash includes: 'android/app/build/outputs/apk/app-release.apk', name: 'APK'
-      }
-      post {
-        always {
-          sh 'docker exec android sh -c "cd /my-app && rm -rf .npm && rm -rf node_modules && rm -rf .config && rm -rf package-lock.json && rm -rf android/build && rm -rf android/.gradle && rm -rf android/app/build"'
-          sh 'docker stop android'
+              // gradle
+              sh "docker exec android_us sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app/android && ENVFILE=.env.us ./gradlew assembleRelease'"
+
+              // stash APK
+              stash includes: 'android/app/build/outputs/apk/app-release.apk', name: 'APK_US'
+            }
+            post {
+              always {
+                sh 'docker exec android_us sh -c "cd /my-app && rm -rf .npm && rm -rf node_modules && rm -rf .config && rm -rf package-lock.json && rm -rf android/build && rm -rf android/.gradle && rm -rf android/app/build"'
+                sh 'docker stop android_us'
+              }
+            }
+          }
+        }
+        stage('ES') {
+          steps {
+            dir("ES") {
+              // grab source code
+              checkout scm
+
+              // unstash secrets
+              unstash 'secrets'
+
+              // launch android sdk container
+              sh "docker run -tid -v ${env.WORKSPACE}/ES:/my-app -e HTTP_PROXY -e HTTPS_PROXY --name android_es --rm javiersantos/android-ci:latest"
+
+              // install node
+              sh "docker exec android_es sh -c 'mkdir /node'"
+              sh "docker exec android_es sh -c 'cd /node && curl -sL https://nodejs.org/dist/v8.10.0/node-v8.10.0-linux-x64.tar.gz | tar xz --strip-components=1'"
+
+              // npm install
+              sh "docker exec android_es sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app && npm config set proxy ${env.HTTP_PROXY} && npm config set https-proxy ${env.HTTPS_PROXY} && npm install'"
+
+              // gradle
+              sh "docker exec android_es sh -c 'export PATH=$PATH:/node/bin && export HOME=. && cd /my-app/android && ENVFILE=.env.es ./gradlew assembleRelease'"
+
+              // stash APK
+              stash includes: 'android/app/build/outputs/apk/app-release.apk', name: 'APK_ES'
+            }
+            post {
+              always {
+                sh 'docker exec android_es sh -c "cd /my-app && rm -rf .npm && rm -rf node_modules && rm -rf .config && rm -rf package-lock.json && rm -rf android/build && rm -rf android/.gradle && rm -rf android/app/build"'
+                sh 'docker stop android_es'
+              }
+            }
+          }
         }
       }
     }
 
     stage ('End to end testing') {
-      steps {
-        unstash 'APK'
-        sh "zip -r test_bundle.zip tests/ wheelhouse/ requirements.txt"
-        sh "scripts/scheduleDeviceFarmTest.sh arn:aws:devicefarm:us-west-2:264359801351:project:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8 arn:aws:devicefarm:us-west-2:264359801351:devicepool:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8/7cefba36-444d-4912-a3ab-469e9ecc9e65 us-west-2 ${env.GIT_COMMIT}"
+      parallel {
+        stage('US') {
+          steps {
+            dir("US") {
+              checkout scm
+              unstash 'APK_US'
+              sh "zip -r test_bundle.zip tests/ wheelhouse/ requirements.txt"
+              sh "scripts/scheduleDeviceFarmTest.sh arn:aws:devicefarm:us-west-2:264359801351:project:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8 arn:aws:devicefarm:us-west-2:264359801351:devicepool:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8/7cefba36-444d-4912-a3ab-469e9ecc9e65 us-west-2 US_${env.GIT_COMMIT}"
+            }
+          }
+        }
+        stage('ES') {
+          steps {
+            dir("ES") {
+              checkout scm
+              unstash 'APK_ES'
+              sh "zip -r test_bundle.zip tests/ wheelhouse/ requirements.txt"
+              sh "scripts/scheduleDeviceFarmTest.sh arn:aws:devicefarm:us-west-2:264359801351:project:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8 arn:aws:devicefarm:us-west-2:264359801351:devicepool:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8/7cefba36-444d-4912-a3ab-469e9ecc9e65 us-west-2 ES_${env.GIT_COMMIT}"
+            }
+          }
+        }
       }
     }
 
     stage ('Deploy to PlayStore BETA') {
-      agent {
-        docker {
-          image 'ruby'
+      parallel {
+        stage('US') {
+          agent {
+            docker {
+              image 'ruby'
+            }
+          }
+          steps {
+            unstash 'secrets'
+            unstash 'APK_US'
+            sh 'gem install fastlane --verbose'
+            sh 'cd android && fastlane beta_us'
+          }
         }
-      }
-      steps {
-        unstash 'secrets'
-        unstash 'APK'
-        sh 'gem install fastlane --verbose'
-        sh 'cd android && fastlane supply --apk app/build/outputs/apk/app-release.apk --track beta'
+        stage('ES') {
+          agent {
+            docker {
+              image 'ruby'
+            }
+          }
+          steps {
+            unstash 'secrets'
+            unstash 'APK_ES'
+            sh 'gem install fastlane --verbose'
+            sh 'cd android && fastlane beta_es'
+          }
+        }
       }
     }
 
@@ -115,7 +190,7 @@ pipeline {
       steps {
         unstash 'secrets'
         sh 'gem install fastlane --verbose'
-        sh 'cd android && fastlane supply --track beta --track_promote_to production --skip_upload_apk true --skip_upload_metadata true --skip_upload_images true --skip_upload_screenshots true'
+        sh 'cd android && fastlane promote_us && fastlane promote_es'
       }
     }
   }

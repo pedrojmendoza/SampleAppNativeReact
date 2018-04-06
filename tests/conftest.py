@@ -5,7 +5,6 @@ from appium import webdriver
 AWS = 'aws'
 LOCAL = 'local'
 
-
 def get_desired_capabilities(location=AWS):
     if location == LOCAL:
         return {
@@ -14,9 +13,7 @@ def get_desired_capabilities(location=AWS):
             'platformName': 'Android',
             'deviceName': 'Android Emulator'
         }
-    else:
-        return {}
-
+    return {}
 
 @pytest.fixture(scope="function")
 def driver():
