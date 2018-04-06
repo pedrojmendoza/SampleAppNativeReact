@@ -4,6 +4,9 @@ pipeline {
 
   environment {
     S3_SECRETS_BUCKET = 'menpedro-playstore-secrets'
+    DF_PROJECT_ARN = 'arn:aws:devicefarm:us-west-2:264359801351:project:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8'
+    DF_DEVICE_POOL_ARN = 'arn:aws:devicefarm:us-west-2:264359801351:devicepool:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8/7cefba36-444d-4912-a3ab-469e9ecc9e65'
+    DF_REGION = 'us-west-2'
   }
 
   triggers {
@@ -125,7 +128,7 @@ pipeline {
               checkout scm
               unstash 'APK_US'
               sh "zip -r test_bundle.zip tests/conftest.py tests/*_us.py wheelhouse/ requirements.txt"
-              sh "scripts/scheduleDeviceFarmTest.sh arn:aws:devicefarm:us-west-2:264359801351:project:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8 arn:aws:devicefarm:us-west-2:264359801351:devicepool:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8/7cefba36-444d-4912-a3ab-469e9ecc9e65 us-west-2 US_${env.GIT_COMMIT}"
+              sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN} ${env.DF_REGION} US_${env.GIT_COMMIT}"
             }
           }
         }
@@ -135,7 +138,7 @@ pipeline {
               checkout scm
               unstash 'APK_ES'
               sh "zip -r test_bundle.zip tests/conftest.py tests/*_es.py wheelhouse/ requirements.txt"
-              sh "scripts/scheduleDeviceFarmTest.sh arn:aws:devicefarm:us-west-2:264359801351:project:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8 arn:aws:devicefarm:us-west-2:264359801351:devicepool:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8/7cefba36-444d-4912-a3ab-469e9ecc9e65 us-west-2 ES_${env.GIT_COMMIT}"
+              sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN} ${env.DF_REGION} ES_${env.GIT_COMMIT}"
             }
           }
         }
