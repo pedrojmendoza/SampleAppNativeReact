@@ -53,7 +53,7 @@ export default class SpainForm extends Component {
 
   render() {
     return (
-      <View style={styles.container} accessibilityLabel="form_view">
+      <View style={styles.container} accessibilityLabel="form_view_es">
         <Form
           ref={c => this._form = c}
           type={User}
@@ -62,7 +62,7 @@ export default class SpainForm extends Component {
         <Button
           title="Inscribirte!"
           onPress={this.handleSubmit}
-          accessibilityLabel="submit_button"
+          accessibilityLabel="submit_button_es"
         />
       </View>
     );

@@ -58,7 +58,7 @@ export default class UsForm extends Component {
 
   render() {
     return (
-      <View style={styles.container} accessibilityLabel="form_view">
+      <View style={styles.container} accessibilityLabel="form_view_us">
         <Form
           ref={c => this._form = c}
           type={User}
@@ -67,7 +67,7 @@ export default class UsForm extends Component {
         <Button
           title="Sign Up!"
           onPress={this.handleSubmit}
-          accessibilityLabel="submit_button"
+          accessibilityLabel="submit_button_us"
         />
       </View>
     );
