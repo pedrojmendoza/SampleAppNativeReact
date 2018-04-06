@@ -73,11 +73,11 @@ pipeline {
               // stash APK
               stash includes: 'android/app/build/outputs/apk/app-release.apk', name: 'APK_US'
             }
-            post {
-              always {
-                sh 'docker exec android_us sh -c "cd /my-app && rm -rf .npm && rm -rf node_modules && rm -rf .config && rm -rf package-lock.json && rm -rf android/build && rm -rf android/.gradle && rm -rf android/app/build"'
-                sh 'docker stop android_us'
-              }
+          }
+          post {
+            always {
+              sh 'docker exec android_us sh -c "cd /my-app && rm -rf .npm && rm -rf node_modules && rm -rf .config && rm -rf package-lock.json && rm -rf android/build && rm -rf android/.gradle && rm -rf android/app/build"'
+              sh 'docker stop android_us'
             }
           }
         }
@@ -106,13 +106,13 @@ pipeline {
               // stash APK
               stash includes: 'android/app/build/outputs/apk/app-release.apk', name: 'APK_ES'
             }
-            post {
-              always {
-                sh 'docker exec android_es sh -c "cd /my-app && rm -rf .npm && rm -rf node_modules && rm -rf .config && rm -rf package-lock.json && rm -rf android/build && rm -rf android/.gradle && rm -rf android/app/build"'
-                sh 'docker stop android_es'
-              }
-            }
           }
+          post {
+            always {
+              sh 'docker exec android_es sh -c "cd /my-app && rm -rf .npm && rm -rf node_modules && rm -rf .config && rm -rf package-lock.json && rm -rf android/build && rm -rf android/.gradle && rm -rf android/app/build"'
+              sh 'docker stop android_es'
+            }
+          }          
         }
       }
     }
