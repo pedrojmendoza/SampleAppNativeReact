@@ -112,12 +112,12 @@ pipeline {
               sh 'docker exec android_es sh -c "cd /my-app && rm -rf .npm && rm -rf node_modules && rm -rf .config && rm -rf package-lock.json && rm -rf android/build && rm -rf android/.gradle && rm -rf android/app/build"'
               sh 'docker stop android_es'
             }
-          }          
+          }
         }
       }
     }
 
-    stage ('End to end testing') {
+    stage ('End to end test') {
       parallel {
         stage('US') {
           steps {
