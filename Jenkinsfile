@@ -49,7 +49,7 @@ pipeline {
       }
     }
 
-    stage ('Build Android APK') {
+    stage ('Android - Build APK') {
       parallel {
         stage('US') {
           steps {
@@ -120,7 +120,7 @@ pipeline {
       }
     }
 
-    stage ('End to end test') {
+    stage ('Android - End to end test') {
       parallel {
         stage('US') {
           steps {
@@ -128,7 +128,7 @@ pipeline {
               checkout scm
               unstash 'APK_US'
               sh "zip -r test_bundle.zip tests/conftest.py tests/*_us.py wheelhouse/ requirements.txt"
-              sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN} ${env.DF_REGION} US_${env.GIT_COMMIT}"
+              sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN} ${env.DF_REGION} US_${env.GIT_COMMIT} android"
             }
           }
         }
@@ -138,14 +138,14 @@ pipeline {
               checkout scm
               unstash 'APK_ES'
               sh "zip -r test_bundle.zip tests/conftest.py tests/*_es.py wheelhouse/ requirements.txt"
-              sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN} ${env.DF_REGION} ES_${env.GIT_COMMIT}"
+              sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN} ${env.DF_REGION} ES_${env.GIT_COMMIT} android"
             }
           }
         }
       }
     }
 
-    stage ('Deploy to PlayStore BETA') {
+    stage ('Android - Deploy to PlayStore BETA') {
       parallel {
         stage('US') {
           agent {
@@ -176,7 +176,7 @@ pipeline {
       }
     }
 
-    stage ('Promote to PlayStore PROD') {
+    stage ('Android - Promote to PlayStore PROD') {
       options {
           timeout(time: 6, unit: 'HOURS')
       }
