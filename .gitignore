@@ -28,3 +28,9 @@ android/.gradle
 venv/
 .pytest_cache/
 tests/__pycache__/
+
+# tests for DF
+test_bundle.zip
+
+# ios archives
+ios/archive/
