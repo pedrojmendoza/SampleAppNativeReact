@@ -1,79 +1,37 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Button } from 'react-native';
-import t from 'tcomb-form-native'; // 0.6.9
+import { StyleSheet, View, TextInput, Text, Switch } from 'react-native';
 
-const Form = t.form.Form;
-
-const User = t.struct({
-  correo: t.String,
-  contraseña: t.String
-});
-
-const formStyles = {
-  ...Form.stylesheet,
-  formGroup: {
-    normal: {
-      marginBottom: 10
-    },
-  },
-  controlLabel: {
-    normal: {
-      color: 'blue',
-      fontSize: 18,
-      marginBottom: 7,
-      fontWeight: '600'
-    },
-    // the style applied when a validation error occours
-    error: {
-      color: 'black',
-      fontSize: 18,
-      marginBottom: 7,
-      fontWeight: '600'
-    }
-  }
-}
-
-const options = {
-  fields: {
-    correo: {
-      error: 'Necesitas un email!'
-    },
-    contraseña: {
-      error: 'Necesitas una contraseña'
-    },
-  },
-  stylesheet: formStyles,
-};
+var Buffer = require('buffer/').Buffer
 
 export default class SpainForm extends Component {
-  handleSubmit = () => {
-    const value = this._form.getValue();
-    console.log('value: ', value);
+  constructor(props) {
+    super(props);
+    this.state = {
+      text: '',
+      encode: true
+    };
   }
 
   render() {
     return (
-      <View style={styles.container} accessibilityLabel="form_view_es">
-        <Form
-          ref={c => this._form = c}
-          type={User}
-          options={options}
+      <View style={{padding: 10}} accessibilityLabel="form_view_es">
+        <Text style={{fontSize: 20}}>
+          Codificador/decodificador de Base 64
+        </Text>
+        <TextInput
+          style={{height: 40}}
+          placeholder={this.state.encode ? "Introduzca lo que desea codificar a BASE64" : "Introduzca lo que desea decodificar de BASE64"}
+          onChangeText={(text) => this.setState({text: text})}
+          value={this.state.text}
         />
-        <Button
-          title="Inscribirte!"
-          onPress={this.handleSubmit}
-          accessibilityLabel="submit_button_es"
+        <Switch
+          onValueChange={(value) => this.setState({text: '', encode: value})}
+          value={this.state.encode}
         />
+        <Text style={{fontSize: 20}}>
+          {this.state.encode ? Buffer.from(this.state.text).toString('base64') : Buffer.from(this.state.text, 'base64').toString('ascii')}
+        </Text>
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-    marginTop: 50,
-    padding: 20,
-    backgroundColor: '#aaffff',
-  },
-});

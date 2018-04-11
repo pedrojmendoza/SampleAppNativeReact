@@ -28,7 +28,7 @@
   "jest": {
     "preset": "react-native",
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|tcomb-form-native|react-native-config)/)"
+      "node_modules/(?!(react-native|react-native-config)/)"
     ],
     "modulePathIgnorePatterns": [
       "npm-cache",
@@ -38,7 +38,6 @@
   "dependencies": {
     "react": "16.3.1",
     "react-native": "0.55.1",
-    "react-native-config": "^0.11.5",
-    "tcomb-form-native": "^0.6.11"
+    "react-native-config": "^0.11.5"
   }
 }
