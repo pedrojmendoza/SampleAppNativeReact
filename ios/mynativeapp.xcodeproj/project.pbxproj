@@ -1291,7 +1291,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.menpedro.base64util.us;
+				PRODUCT_BUNDLE_IDENTIFIER = com.menpedro.base64util;
 				PRODUCT_NAME = mynativeapp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1320,7 +1320,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.menpedro.base64util.us;
+				PRODUCT_BUNDLE_IDENTIFIER = com.menpedro.base64util;
 				PRODUCT_NAME = mynativeapp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
