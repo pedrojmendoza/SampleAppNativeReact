@@ -16,7 +16,11 @@
     "debug:android:us": "ENVFILE=.env.us react-native run-android",
     "release:android:es": "cd android && ENVFILE=.env.es ./gradlew assembleRelease && cd ..",
     "release:android:us": "cd android && ENVFILE=.env.us ./gradlew assembleRelease && cd ..",
-    "ios": "react-native run-ios",
+    "debug:ios:es": "ENVFILE=.env.es react-native run-ios",
+    "debug:ios:us": "ENVFILE=.env.us react-native run-ios",
+    "release:ios:es": "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration Release -scheme mynativeapp-ES -destination generic/platform=iOS -derivedDataPath build && cd ..",
+    "release:ios:us": "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration Release -scheme mynativeapp-US -destination generic/platform=iOS -derivedDataPath build && cd ..",
+    "archive:ios": "cd ios/build/Build/Products/Release-iphoneos && mkdir Payload && cp -R mynativeapp.app Payload/ && zip -r mynativeapp-ES.ipa Payload/ && rm -rf Payload && cd ../../../../..",
     "start:appium": "appium",
     "test": "jest --testMatch=\"**/tests/**/!(*e2e.js)\"",
     "test:e2e:android": "source venv/bin/activate && LOCATION='local' py.test && deactivate"
