@@ -1281,6 +1281,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-config/ios/ReactNativeConfig",
+					"$(REACT_HEADERS_PATH)",
 				);
 				INFOPLIST_FILE = mynativeapp/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
@@ -1296,6 +1297,7 @@
 				PRODUCT_NAME = mynativeapp;
 				PROVISIONING_PROFILE = "45e9b051-acd5-4268-b14c-e98b5c086dd1";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.menpedro.base64util";
+				REACT_HEADERS_PATH = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1312,6 +1314,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-config/ios/ReactNativeConfig",
+					"$(REACT_HEADERS_PATH)",
 				);
 				INFOPLIST_FILE = mynativeapp/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
@@ -1327,6 +1330,7 @@
 				PRODUCT_NAME = mynativeapp;
 				PROVISIONING_PROFILE = "193e803d-dc09-410a-be5d-9ae4e6b8c0dd";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.menpedro.base64util";
+				REACT_HEADERS_PATH = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -1496,6 +1500,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-config/ios/ReactNativeConfig",
+					"$(REACT_HEADERS_PATH)",
 				);
 				INFOPLIST_FILE = mynativeapp/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
@@ -1511,6 +1516,7 @@
 				PRODUCT_NAME = mynativeapp;
 				PROVISIONING_PROFILE = "dd176fd6-6538-47db-861a-6e8dcb7a33ce";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.menpedro.base64util.es";
+				REACT_HEADERS_PATH = "$(BUILD_DIR)/Release-$(PLATFORM_NAME)/include";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = ReleaseSpain;
