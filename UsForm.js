@@ -15,7 +15,7 @@ export default class UsForm extends Component {
   render() {
     return (
       <View style={{padding: 10}} accessibilityLabel="form_view_us">
-        <Text style={{fontSize: 20}}>
+        <Text>
           Base 64 encoder/decoder
         </Text>
         <TextInput

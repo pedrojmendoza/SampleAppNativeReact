@@ -35,5 +35,9 @@ test_bundle.zip
 # ios archives
 ios/archive/
 
+# ios IPA/ZIP
+*.ipa
+*.zip
+
 # xcode binary files
 ios/mynativeapp.xcodeproj/project.xcworkspace/xcuserdata/menpedro.xcuserdatad/UserInterfaceState.xcuserstate
