@@ -1509,8 +1509,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.menpedro.base64util.es;
 				PRODUCT_NAME = mynativeapp;
-				PROVISIONING_PROFILE = "193e803d-dc09-410a-be5d-9ae4e6b8c0dd";
-				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.menpedro.base64util";
+				PROVISIONING_PROFILE = "dd176fd6-6538-47db-861a-6e8dcb7a33ce";
+				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.menpedro.base64util.es";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = ReleaseSpain;
