@@ -18,6 +18,8 @@
     "release:android:us": "cd android && ENVFILE=.env.us ./gradlew assembleRelease && cd ..",
     "debug:ios:es": "ENVFILE=.env.es react-native run-ios",
     "debug:ios:us": "ENVFILE=.env.us react-native run-ios",
+    "run-in-simulator:ios:es": "react-native run-ios --scheme mynativeapp-ES --configuration Release",
+    "run-in-simulator:ios:us": "react-native run-ios --scheme mynativeapp-US --configuration Release",
     "release:ios:es": "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration Release -scheme mynativeapp-ES -destination generic/platform=iOS -derivedDataPath build && cd ..",
     "release:ios:us": "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration Release -scheme mynativeapp-US -destination generic/platform=iOS -derivedDataPath build && cd ..",
     "archive:ios": "cd ios/build/Build/Products/Release-iphoneos && mkdir Payload && cp -R mynativeapp.app Payload/ && zip -r mynativeapp.ipa Payload/ && rm -rf Payload && cd ../../../../..",
