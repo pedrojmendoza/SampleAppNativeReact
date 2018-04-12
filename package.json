@@ -23,7 +23,8 @@
     "build:ios:es": "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration Release -scheme mynativeapp-ES -destination generic/platform=iOS -derivedDataPath build && cd ..",
     "build:ios:us": "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration Release -scheme mynativeapp-US -destination generic/platform=iOS -derivedDataPath build && cd ..",
     "archive-for-devicefarm:ios": "cd ios/build/Build/Products/Release-iphoneos && mkdir Payload && cp -R mynativeapp.app Payload/ && zip -r mynativeapp.ipa Payload/ && rm -rf Payload && cd ../../../../..",
-    "fastlane:ios:us": "fastlane match appstore --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util --git_url https://git-codecommit.us-east-1.amazonaws.com/v1/repos/AppStoreCerts && fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-US && fastlane pilot upload --username pedrojmendoza@gmail.com",
+    "fastlane:ios:us": "fastlane match appstore --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util --git_url https://git-codecommit.us-east-1.amazonaws.com/v1/repos/AppStoreCerts && fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-US --configuration Release --clean && fastlane pilot upload --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util",
+    "fastlane:ios:es": "fastlane match appstore --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util.es --git_url https://git-codecommit.us-east-1.amazonaws.com/v1/repos/AppStoreCerts && fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-ES --configuration ReleaseSpain --clean && fastlane pilot upload --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util.es",
     "start:appium": "appium",
     "test": "jest --testMatch=\"**/tests/**/!(*e2e.js)\"",
     "test:e2e:android": "source venv/bin/activate && LOCATION='local' py.test && deactivate"
