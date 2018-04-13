@@ -5,7 +5,8 @@ pipeline {
   environment {
     S3_SECRETS_BUCKET = 'menpedro-playstore-secrets'
     DF_PROJECT_ARN = 'arn:aws:devicefarm:us-west-2:264359801351:project:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8'
-    DF_DEVICE_POOL_ARN = 'arn:aws:devicefarm:us-west-2:264359801351:devicepool:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8/7cefba36-444d-4912-a3ab-469e9ecc9e65'
+    DF_DEVICE_POOL_ARN_ANDROID = 'arn:aws:devicefarm:us-west-2:264359801351:devicepool:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8/7cefba36-444d-4912-a3ab-469e9ecc9e65'
+    DF_DEVICE_POOL_ARN_IOS = 'arn:aws:devicefarm:us-west-2:264359801351:devicepool:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8/7c31c2ce-d140-4687-b89d-38893d4dfc6e'
     DF_REGION = 'us-west-2'
   }
 
@@ -37,6 +38,43 @@ pipeline {
       }
     }
 
+    stage('Build iOS - ES') {
+      agent {
+        docker {
+          image 'ruby'
+        }
+      }
+      steps {
+         sh "xcode-select --install"
+         sh "gem install fastlane --verbose"
+         sh "fastlane match appstore --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util.es --git_url https://git-codecommit.us-east-1.amazonaws.com/v1/repos/AppStoreCerts"
+         sh "fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-ES --configuration ReleaseSpain --clean"
+         stash includes: 'mynativeapp.ipa', name: 'IPA_ES'
+      }
+    }
+
+    stage('Test iOS - ES') {
+      steps {
+         unstash 'IPA_ES'
+         sh "zip -r test_bundle.zip tests/conftest.py tests/*_es.py wheelhouse/ requirements.txt"
+         sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN_IOS} ${env.DF_REGION} IOS_ES_${env.GIT_COMMIT} ios"
+      }
+    }
+
+    stage('Deploy iOS - Testflight - ES') {
+      agent {
+        docker {
+          image 'ruby'
+        }
+      }
+      steps {
+         unstash 'IPA_ES'
+         sh "gem install fastlane --verbose"
+         sh "fastlane pilot upload --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util.es"
+      }
+    }
+
+/*
     stage ('Grab secrets') {
       steps {
         // download secrets from S3
@@ -128,7 +166,7 @@ pipeline {
               checkout scm
               unstash 'APK_US'
               sh "zip -r test_bundle.zip tests/conftest.py tests/*_us.py wheelhouse/ requirements.txt"
-              sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN} ${env.DF_REGION} US_${env.GIT_COMMIT} android"
+              sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN_ANDROID} ${env.DF_REGION} ANDROID_US_${env.GIT_COMMIT} android"
             }
           }
         }
@@ -138,7 +176,7 @@ pipeline {
               checkout scm
               unstash 'APK_ES'
               sh "zip -r test_bundle.zip tests/conftest.py tests/*_es.py wheelhouse/ requirements.txt"
-              sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN} ${env.DF_REGION} ES_${env.GIT_COMMIT} android"
+              sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN_ANDROID} ${env.DF_REGION} ANDROID_ES_${env.GIT_COMMIT} android"
             }
           }
         }
@@ -197,5 +235,6 @@ pipeline {
         sh 'fastlane supply --track beta --track_promote_to production --skip_upload_apk true --skip_upload_metadata true --skip_upload_images true --skip_upload_screenshots true --package_name com.mynativeapp.es --json_key google-play.json --verbose'
       }
     }
+*/
   }
 }
