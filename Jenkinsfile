@@ -40,32 +40,21 @@ pipeline {
     }
 */
 
-    stage('Build iOS - ES') {
+    stage('Build (for test) and Test iOS - ES') {
       steps {
          sh "npm install"
-         sh "fastlane match appstore --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util.es --git_url https://git-codecommit.us-east-1.amazonaws.com/v1/repos/AppStoreCerts"
-         sh "fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-ES --configuration ReleaseSpain --clean"
-         stash includes: 'mynativeapp.ipa', name: 'IPA_ES'
-      }
-    }
-
-    stage('Test iOS - ES') {
-      steps {
-         unstash 'IPA_ES'
+         sh "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration ReleaseSpain -scheme mynativeapp-ES -destination generic/platform=iOS -derivedDataPath build && cd .."
+         sh "cd ios/build/Build/Products/Release-iphoneos && mkdir Payload && cp -R mynativeapp.app Payload/ && zip -r mynativeapp.ipa Payload/ && rm -rf Payload && cd ../../../../.."
          sh "zip -r test_bundle.zip tests/conftest.py tests/*_es.py wheelhouse/ requirements.txt"
          sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN_IOS} ${env.DF_REGION} IOS_ES_${env.GIT_COMMIT} ios"
       }
     }
 
-    stage('Deploy iOS - Testflight - ES') {
-      agent {
-        docker {
-          image 'ruby'
-        }
-      }
+    stage('Build (for deploy) and Deploy iOS - Testflight - ES') {
       steps {
-         unstash 'IPA_ES'
-         sh "gem install fastlane --verbose"
+         sh "npm install"
+         sh "fastlane match appstore --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util.es --git_url https://git-codecommit.us-east-1.amazonaws.com/v1/repos/AppStoreCerts"
+         sh "fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-ES --configuration ReleaseSpain --clean"
          sh "fastlane pilot upload --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util.es"
       }
     }

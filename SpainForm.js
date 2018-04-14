@@ -16,7 +16,7 @@ export default class SpainForm extends Component {
     return (
       <View style={{padding: 10}} accessibilityLabel="form_view_es">
         <Text>
-          Codificador/decodificador de Base 64
+          Codificador/decod de Base 64
         </Text>
         <TextInput
           style={{height: 40}}
