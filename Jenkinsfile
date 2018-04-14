@@ -15,6 +15,7 @@ pipeline {
   }
 
   stages {
+/*
     stage('Unit test') {
       agent {
         docker {
@@ -37,6 +38,7 @@ pipeline {
         sh "docker run -v ${env.WORKSPACE}:/target -e HTTP_PROXY -e HTTPS_PROXY --rm stono/hawkeye"
       }
     }
+*/
 
     stage('Build iOS - ES') {
       steps {
