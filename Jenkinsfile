@@ -44,7 +44,7 @@ pipeline {
       steps {
          sh "npm install"
          sh "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration ReleaseSpain -scheme mynativeapp-ES -destination generic/platform=iOS -derivedDataPath build && cd .."
-         sh "cd ios/build/Build/Products/Release-iphoneos && mkdir Payload && cp -R mynativeapp.app Payload/ && zip -r mynativeapp.ipa Payload/ && rm -rf Payload && cd ../../../../.."
+         sh "cd ios/build/Build/Products/ReleaseSpain-iphoneos && mkdir Payload && cp -R mynativeapp.app Payload/ && zip -r ../../../../../mynativeapp.ipa Payload/ && rm -rf Payload && cd ../../../../.."
          sh "zip -r test_bundle.zip tests/conftest.py tests/*_es.py wheelhouse/ requirements.txt"
          sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN_IOS} ${env.DF_REGION} IOS_ES_${env.GIT_COMMIT} ios"
       }

@@ -15,8 +15,8 @@ then
   UPLOAD_NAME="app-release.apk"
 else
   UPLOAD_TYPE="IOS_APP"
-  UPLOAD_FILE="ios/build/Build/Products/Release-iphoneos/mynativeapp.ipa"
-  #UPLOAD_FILE="mynativeapp.ipa"
+  #UPLOAD_FILE="ios/build/Build/Products/Release-iphoneos/mynativeapp.ipa"
+  UPLOAD_FILE="mynativeapp.ipa"
   UPLOAD_NAME="mynativeapp.ipa"
 fi
 
