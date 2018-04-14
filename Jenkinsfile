@@ -40,6 +40,7 @@ pipeline {
 
     stage('Build iOS - ES') {
       steps {
+         sh "npm install"
          sh "fastlane match appstore --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util.es --git_url https://git-codecommit.us-east-1.amazonaws.com/v1/repos/AppStoreCerts"
          sh "fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-ES --configuration ReleaseSpain --clean"
          stash includes: 'mynativeapp.ipa', name: 'IPA_ES'
@@ -55,8 +56,14 @@ pipeline {
     }
 
     stage('Deploy iOS - Testflight - ES') {
+      agent {
+        docker {
+          image 'ruby'
+        }
+      }
       steps {
          unstash 'IPA_ES'
+         sh "gem install fastlane --verbose"
          sh "fastlane pilot upload --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util.es"
       }
     }
