@@ -6,6 +6,8 @@
 # $4 -> runName -> 1
 # $5 -> platform -> android/ios
 
+set -e
+
 if [ $5 == "android" ]
 then
   UPLOAD_TYPE="ANDROID_APP"
@@ -13,7 +15,8 @@ then
   UPLOAD_NAME="app-release.apk"
 else
   UPLOAD_TYPE="IOS_APP"
-  UPLOAD_FILE="ios/build/Build/Products/Release-iphoneos/mynativeapp.ipa"
+  #UPLOAD_FILE="ios/build/Build/Products/Release-iphoneos/mynativeapp.ipa"
+  UPLOAD_FILE="mynativeapp.ipa"
   UPLOAD_NAME="mynativeapp.ipa"
 fi
 
