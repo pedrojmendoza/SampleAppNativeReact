@@ -9,9 +9,6 @@ export default class App extends Component {
   render() {
     return (
       <View>
-        <Text accessibilityLabel="country_text">
-          Country is {Config.COUNTRY}
-        </Text>
         <FeatureToggle show={Config.COUNTRY === "ES"}>
           <SpainForm />
         </FeatureToggle>
