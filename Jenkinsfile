@@ -40,7 +40,7 @@ pipeline {
     }
 */
 
-    stage('Build (for test) and Test iOS - ES') {
+    stage('Build/Test iOS - ES') {
       steps {
          sh "npm install"
          sh "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration ReleaseSpain -scheme mynativeapp-ES -destination generic/platform=iOS -derivedDataPath build && cd .."
@@ -50,7 +50,7 @@ pipeline {
       }
     }
 
-    stage('Build (for deploy) and Deploy iOS - Testflight - ES') {
+    stage('Build/Deploy iOS - Testflight - ES') {
       steps {
          sh "npm install"
          sh "fastlane match appstore --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util.es --git_url https://git-codecommit.us-east-1.amazonaws.com/v1/repos/AppStoreCerts"
