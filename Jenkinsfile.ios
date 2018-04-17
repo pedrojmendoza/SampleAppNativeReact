@@ -1,0 +1,69 @@
+#!/usr/bin/env groovy
+pipeline {
+  agent any
+
+  environment {
+    DF_PROJECT_ARN = 'arn:aws:devicefarm:us-west-2:264359801351:project:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8'
+    DF_DEVICE_POOL_ARN_IOS = 'arn:aws:devicefarm:us-west-2:264359801351:devicepool:d10ad03e-8060-49d1-bf7d-5ad3b9260ed8/7c31c2ce-d140-4687-b89d-38893d4dfc6e'
+    DF_REGION = 'us-west-2'
+    APP_STORE_USER = 'pedrojmendoza@gmail.com'
+    APP_STORE_SECRETS_REPO = 'https://git-codecommit.us-east-1.amazonaws.com/v1/repos/AppStoreCerts'
+  }
+
+  triggers {
+    pollSCM('* * * * *')
+  }
+
+  stages {
+/*
+    stage('Unit test') {
+      agent {
+        docker {
+          image 'node:6'
+        }
+      }
+      environment {
+        HOME="."
+      }
+      steps {
+        sh "npm config set proxy ${env.HTTP_PROXY}"
+        sh "npm config set https-proxy ${env.HTTPS_PROXY}"
+        sh "npm install"
+        sh "CI=true npm test"
+      }
+    }
+
+    stage('Security test') {
+      steps {
+        sh "docker run -v ${env.WORKSPACE}:/target -e HTTP_PROXY -e HTTPS_PROXY --rm stono/hawkeye"
+      }
+    }
+*/
+
+    stage('iOS - Build - ES') {
+      steps {
+         sh "npm install"
+         sh "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration ReleaseSpain -scheme mynativeapp-ES -destination generic/platform=iOS -derivedDataPath build && cd .."
+         stash includes: 'ios/build/Build/Products/ReleaseSpain-iphoneos/**', name: 'APP_ES'
+      }
+    }
+
+    stage('iOS - Test - ES') {
+      steps {
+         unstash 'APP_ES'
+         sh "cd ios/build/Build/Products/ReleaseSpain-iphoneos && mkdir Payload && cp -R mynativeapp.app Payload/ && zip -r ../../../../../mynativeapp.ipa Payload/ && rm -rf Payload && cd ../../../../.."
+         sh "zip -r test_bundle.zip tests/conftest.py tests/*_es.py wheelhouse/ requirements.txt"
+         sh "scripts/scheduleDeviceFarmTest.sh ${env.DF_PROJECT_ARN} ${env.DF_DEVICE_POOL_ARN_IOS} ${env.DF_REGION} IOS_ES_${env.GIT_COMMIT} ios"
+      }
+    }
+
+    stage('iOS - Deploy/Testflight - ES') {
+      steps {
+         sh "npm install"
+         sh "fastlane match appstore --username ${env.APP_STORE_USER} --app_identifier com.menpedro.base64util.es --git_url ${env.APP_STORE_SECRETS_REPO}"
+         sh "fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-ES --configuration ReleaseSpain --clean"
+         sh "fastlane pilot upload --username ${env.APP_STORE_USER} --app_identifier com.menpedro.base64util.es"
+      }
+    }
+  }
+}
