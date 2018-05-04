@@ -82,7 +82,7 @@ pipeline {
       sh "fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-US --configuration ReleaseUS --clean"
       sh "fastlane pilot upload --username ${env.APP_STORE_USER} --app_identifier com.menpedro.base64util.us"
     }
-    stage('iOS - Deploy/Testflight - US') {
+    stage('iOS - Deploy/Testflight - ES') {
       sh "npm install"
       sh "fastlane match appstore --username ${env.APP_STORE_USER} --app_identifier com.menpedro.base64util.es --git_url ${env.APP_STORE_SECRETS_REPO}"
       sh "fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-ES --configuration ReleaseSpain --clean"
