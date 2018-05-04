@@ -7,6 +7,7 @@ Focus is on the CD process required to build/test/deploy the different versions 
 * [Description](#description)
 * [Pre conditions for Android](#pre-conditions-for-android)
 * [Pre conditions for iOS](#pre-conditions-for-ios)
+* [Steps for provisioning a new country for iOS](#steps-for-provisioning-a-new-country-for-ios)
 * [TODOs](#todos)
 
 ## Description
@@ -24,6 +25,7 @@ Pipeline includes stages for unit testing (using [Jest](https://facebook.github.
 For the publication to stores, direct deployment to Google App Store (deployment to Beta and, manually approved in the pipeline, promotion to Prod using [fastlane](https://fastlane.tools/)) and signed APP/IPA build and direct deployment to App Store (deployment to TestFlight using [fastlane](https://fastlane.tools/) as well).
 
 ## Pre conditions for Android
+
 1. Google Play Store apps for each country created
 2. APK signing keys and Graddle's config files properly configured -> https://facebook.github.io/react-native/docs/signed-apk-android.html
 3. Google credentials for publishing to PlayStore available -> https://docs.fastlane.tools/getting-started/android/setup/#collect-your-google-credentials
@@ -34,16 +36,27 @@ Based on the above preconditions, the `Jenkisfile.android` (env variables and ap
 The machine running the Jenkins agents should have access to the S3 bucket as well as permissions to interact with the Device Farm artifacts
 
 ## Pre conditions for iOS
-1. App Store apps for each country created in iTunes Connect
+
+1. App Store apps for each country created in iTunes Connect (see details below on how to use `fastlane produce` for that)
 2. Jenkins being able to use properly provisioned MacOS nodes for the xcodebuild execution
-3. App Store provisioning profiles and corresponding certificates for code signing properly configured in separate (secrets) Git repo
+3. App Store provisioning profiles and corresponding certificates for code signing properly configured in separate (secrets) Git repo (see details below on how to use `fastlane match` for that)
 4. AWS Device Farm configured with a Project and Device Pool
 
 Based on the above preconditions, the `Jenkisfile.ios` (env variables and apps ids should be adjusted) and the App Store provisioning profiles and certificates created and uploaded in the secrets' Git repo (see `Jenkinsfile.ios` for details)
 
 The machine running the Jenkins agents should have access to the secrets' Git repo as well as permissions to interact with the Device Farm artifacts
 
+## Steps for provisioning a new country for iOS
+
+1. Create new bundle ID in Apple Developer Center -> ```fastlane produce create --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util.us --app_name "Base 64 util - US"```
+2. Create certs for new bundle ID -> ```fastlane match appstore --username pedrojmendoza@gmail.com --app_identifier com.menpedro.base64util.us --git_url https://git-codecommit.us-east-1.amazonaws.com/v1/repos/AppStoreCerts```
+3. Add configuration (use *ReleaseSpain* as origin) -> *XCode/Project/Info/Configurations/+* -> Changes will be reflected in `ios/mynativeapp.xcodeproj/project.pbxproj`
+4. Adjust bundle id for new configuration -> *XCode/<Target>/Build Settings/Packaging/Product Bundle Identifier/Expand* -> Changes will be reflected in  `ios/mynativeapp.xcodeproj/project.pbxproj`
+5. Adjust value for user defined setting for app name (*APP_DISPLAY_NAME*) -> *XCode/<Target>/Build Settings/APP_DISPLAY_NAME* -> Changes will be reflected in  `ios/mynativeapp.xcodeproj/project.pbxproj`
+6. Adjust provisioning profile for new config -> *XCode/<Target>/General/Signing* -> Uncheck "Automatically manage signing" and select the corresponding profile for the new configuration -> Changes will be reflected in `ios/mynativeapp.xcodeproj/project.pbxproj`
+
 ## TODOs
+
 1. Reuse common sections in `Jenkinsfile.android` (build APK) by externalizing it into a script
 2. Make independent promotions to PROD for each country?
 3. Replace `javiersantos/android-ci:latest` with a custom docker that also includes npm/node

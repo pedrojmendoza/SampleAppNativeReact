@@ -39,5 +39,7 @@ ios/archive/
 *.ipa
 *.zip
 
-# xcode binary files
+# xcode binary/internal files
 ios/mynativeapp.xcodeproj/project.xcworkspace/xcuserdata/menpedro.xcuserdatad/UserInterfaceState.xcuserstate
+ios/mynativeapp.xcodeproj/project.xcworkspace/xcshareddata/
+ios/mynativeapp.xcodeproj/project.xcworkspace/xcuserdata/
