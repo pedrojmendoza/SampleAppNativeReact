@@ -62,7 +62,6 @@ The machine running the Jenkins agents should have access to the secrets' Git re
 
 1. Reuse common sections in `Jenkinsfile.android` (build APK) by externalizing it into a script
 2. Make independent promotions to PROD for each country?
-3. Replace `javiersantos/android-ci:latest` with a custom docker that also includes npm/node
-4. Automate the APK version code increment (stored in `android/app/build.graddle`)
-5. Extend the iOS pipeline to promote to AppStore PROD using fastline deliver? -> This might require filling in all the "admin" details in App Store
-6. Automate the build number increment (stored in `ios/mynativeapp/Info.plist as CFBundleVersion`)
+3. Automate the APK version code increment (stored in `android/app/build.graddle`)
+4. Extend the iOS pipeline to promote to AppStore PROD using fastline deliver? -> This might require filling in all the "admin" details in App Store
+5. Automate the build number increment (stored in `ios/mynativeapp/Info.plist as CFBundleVersion`)
