@@ -54,6 +54,9 @@ The machine running the Jenkins agents should have access to the secrets' Git re
 4. Adjust bundle id for new configuration -> *XCode/<Target>/Build Settings/Packaging/Product Bundle Identifier/Expand* -> Changes will be reflected in  `ios/mynativeapp.xcodeproj/project.pbxproj`
 5. Adjust value for user defined setting for app name (*APP_DISPLAY_NAME*) -> *XCode/<Target>/Build Settings/APP_DISPLAY_NAME* -> Changes will be reflected in  `ios/mynativeapp.xcodeproj/project.pbxproj`
 6. Adjust provisioning profile for new config -> *XCode/<Target>/General/Signing* -> Uncheck "Automatically manage signing" and select the corresponding profile for the new configuration -> Changes will be reflected in `ios/mynativeapp.xcodeproj/project.pbxproj`
+7. Create environment file (`.env.us`) and set the environment variable to the appropiate value (`COUNTRY=US`)
+8. Create new scheme for the new country -> *XCode/Product/Scheme/Manage Schemes/<Scheme>/Edit* -> *Duplicate Schema* -> *<Scheme>-US*
+9. Inject environment into build process -> *XCode/Product/Scheme/Manage Schemes/<Scheme>-US/Edit* -> *Build/Pre-Actions/+/New Run Script Action* -> ```echo ".env.us" > /tmp/envfile```
 
 ## TODOs
 
