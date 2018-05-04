@@ -1,5 +1,5 @@
 Appium-Python-Client==0.26
-attrs==17.4.0
+attrs==18.1.0
 funcsigs==1.0.2
 more-itertools==4.1.0
 pluggy==0.6.0
