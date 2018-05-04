@@ -38,29 +38,15 @@ pipeline {
       }
     }
 
-    stage ('iOS - Build') {
-      parallel {
-        stage('US') {
-          steps {
-            dir("US") {
-              checkout scm
-              sh "npm install"
-              sh "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration ReleaseUS -scheme mynativeapp-US -destination generic/platform=iOS -derivedDataPath build && cd .."
-              stash includes: 'ios/build/Build/Products/ReleaseUS-iphoneos/**', name: 'APP_US'
-            }
-          }
-        }
-        stage('ES') {
-          steps {
-            dir("ES") {
-              checkout scm
-              sh "npm install"
-              sh "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration ReleaseSpain -scheme mynativeapp-ES -destination generic/platform=iOS -derivedDataPath build && cd .."
-              stash includes: 'ios/build/Build/Products/ReleaseSpain-iphoneos/**', name: 'APP_ES'
-            }
-          }
-        }
-      }
+    stage ('iOS - Build - US') {
+      sh "npm install"
+      sh "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration ReleaseUS -scheme mynativeapp-US -destination generic/platform=iOS -derivedDataPath build && cd .."
+      stash includes: 'ios/build/Build/Products/ReleaseUS-iphoneos/**', name: 'APP_US'
+    }
+    stage ('iOS - Build - ES') {
+      sh "npm install"
+      sh "cd ios && xcodebuild -project mynativeapp.xcodeproj -configuration ReleaseSpain -scheme mynativeapp-ES -destination generic/platform=iOS -derivedDataPath build && cd .."
+      stash includes: 'ios/build/Build/Products/ReleaseSpain-iphoneos/**', name: 'APP_ES'
     }
 
     stage ('iOS - Test') {
@@ -90,31 +76,17 @@ pipeline {
       }
     }
 
-    stage('iOS - Deploy/Testflight') {
-      parallel {
-        stage('US') {
-          steps {
-            dir("US") {
-              checkout scm
-              sh "npm install"
-              sh "fastlane match appstore --username ${env.APP_STORE_USER} --app_identifier com.menpedro.base64util.us --git_url ${env.APP_STORE_SECRETS_REPO}"
-              sh "fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-US --configuration ReleaseUS --clean"
-              sh "fastlane pilot upload --username ${env.APP_STORE_USER} --app_identifier com.menpedro.base64util.us"
-            }
-          }
-        }
-        stage('ES') {
-          steps {
-            dir("ES") {
-              checkout scm
-              sh "npm install"
-              sh "fastlane match appstore --username ${env.APP_STORE_USER} --app_identifier com.menpedro.base64util.es --git_url ${env.APP_STORE_SECRETS_REPO}"
-              sh "fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-ES --configuration ReleaseSpain --clean"
-              sh "fastlane pilot upload --username ${env.APP_STORE_USER} --app_identifier com.menpedro.base64util.es"
-            }
-          }
-        }
-      }
+    stage('iOS - Deploy/Testflight - US') {
+      sh "npm install"
+      sh "fastlane match appstore --username ${env.APP_STORE_USER} --app_identifier com.menpedro.base64util.us --git_url ${env.APP_STORE_SECRETS_REPO}"
+      sh "fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-US --configuration ReleaseUS --clean"
+      sh "fastlane pilot upload --username ${env.APP_STORE_USER} --app_identifier com.menpedro.base64util.us"
+    }
+    stage('iOS - Deploy/Testflight - US') {
+      sh "npm install"
+      sh "fastlane match appstore --username ${env.APP_STORE_USER} --app_identifier com.menpedro.base64util.es --git_url ${env.APP_STORE_SECRETS_REPO}"
+      sh "fastlane gym --project './ios/mynativeapp.xcodeproj' --scheme mynativeapp-ES --configuration ReleaseSpain --clean"
+      sh "fastlane pilot upload --username ${env.APP_STORE_USER} --app_identifier com.menpedro.base64util.es"
     }
   }
 }
